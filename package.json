@@ -1,8 +1,11 @@
 {
   "name": "optimus",
+  "author": "Steven Ortiz",
   "version": "1.0.0",
   "license": "MIT",
   "main": "index.js",
+  "description": "A simple asset optimizer.",
+  "homepage": "https://github.com/sortiz4/optimus",
   "dependencies": {
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
