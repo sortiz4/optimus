@@ -98,7 +98,7 @@ async function hook(environment) {
   if (isIonicHook(environment)) {
     return runIonicHook(environment);
   }
-};
+}
 
 module.exports = {
   hook,
