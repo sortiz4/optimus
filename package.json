@@ -1,0 +1,14 @@
+{
+  "name": "optimus",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "index.js",
+  "dependencies": {
+    "fs-extra": "^9.0.1",
+    "glob": "^7.1.6",
+    "html-minifier": "^4.0.0",
+    "javascript-obfuscator": "^2.9.4",
+    "svgo": "^1.3.2",
+    "terser": "^5.5.1"
+  }
+}
