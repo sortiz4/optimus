@@ -1,48 +1,50 @@
 const fs = require('fs');
 const path = require('path');
-const { glob, optimize } = modules();
+const { glob, merge, optimize } = modules();
 
-const JS_OPTIONS = {
-  format: {
-    comments: false,
+const DEFAULT_OPTIONS = {
+  js: {
+    format: {
+      comments: false,
+    },
+    nameCache: {
+    },
   },
-  nameCache: {
+  svg: {
+    multipass: true,
+    plugins: [
+      { cleanupAttrs: false },
+      { cleanupEnableBackground: false },
+      { cleanupIDs: false },
+      { cleanupNumericValues: false },
+      { convertColors: false },
+      { convertEllipseToCircle: false },
+      { convertPathData: false },
+      { convertShapeToPath: false },
+      { mergePaths: false },
+      { removeTitle: false },
+      { removeUnknownsAndDefaults: false },
+      { removeUselessStrokeAndFill: false },
+      { removeViewBox: false },
+      { removeXMLProcInst: false },
+    ],
   },
-};
-
-const SVG_OPTIONS = {
-  multipass: true,
-  plugins: [
-    { cleanupAttrs: false },
-    { cleanupEnableBackground: false },
-    { cleanupIDs: false },
-    { cleanupNumericValues: false },
-    { convertColors: false },
-    { convertEllipseToCircle: false },
-    { convertPathData: false },
-    { convertShapeToPath: false },
-    { mergePaths: false },
-    { removeTitle: false },
-    { removeUnknownsAndDefaults: false },
-    { removeUselessStrokeAndFill: false },
-    { removeViewBox: false },
-    { removeXMLProcInst: false },
-  ],
-};
-
-const HTML_OPTIONS = {
-  collapseWhitespace: true,
-  removeComments: true,
+  html: {
+    collapseWhitespace: true,
+    removeComments: true,
+  },
 };
 
 function modules() {
   const glob = require('glob');
   const htmlMinifier = require('html-minifier');
+  const merge = require('lodash/merge');
   const Svgo = require('svgo');
   const terser = require('terser');
   const util = require('util');
 
   return {
+    merge,
     glob: util.promisify(glob),
     optimize: {
       js(content, options) {
@@ -58,41 +60,43 @@ function modules() {
   };
 }
 
-async function removeMapFiles(files) {
-  await Promise.all(files.map(fs.promises.unlink));
-}
-
-async function transformJsFiles(files) {
-  await Promise.all(files.map(transformJsFile));
-}
-
-async function transformSvgFiles(files) {
-  await Promise.all(files.map(transformSvgFile));
-}
-
-async function transformHtmlFiles(files) {
-  await Promise.all(files.map(transformHtmlFile));
-}
-
 async function transformFile(transformer, options, file) {
   const original = await fs.promises.readFile(file, 'utf-8');
   const minified = await transformer(original, options);
   await fs.promises.writeFile(file, minified);
 }
 
-async function transformJsFile(file) {
-  await transformFile(optimize.js, JS_OPTIONS, file);
-}
+async function optimus(context, options) {
+  async function removeMapFiles(files) {
+    await Promise.all(files.map(fs.promises.unlink));
+  }
 
-async function transformSvgFile(file) {
-  await transformFile(optimize.svg, SVG_OPTIONS, file);
-}
+  async function transformJsFiles(files) {
+    await Promise.all(files.map(transformJsFile));
+  }
 
-async function transformHtmlFile(file) {
-  await transformFile(optimize.html, HTML_OPTIONS, file);
-}
+  async function transformSvgFiles(files) {
+    await Promise.all(files.map(transformSvgFile));
+  }
 
-async function optimus(context) {
+  async function transformHtmlFiles(files) {
+    await Promise.all(files.map(transformHtmlFile));
+  }
+
+  async function transformJsFile(file) {
+    await transformFile(optimize.js, mergedOptions.js, file);
+  }
+
+  async function transformSvgFile(file) {
+    await transformFile(optimize.svg, mergedOptions.svg, file);
+  }
+
+  async function transformHtmlFile(file) {
+    await transformFile(optimize.html, mergedOptions.html, file);
+  }
+
+  const mergedOptions = merge({}, DEFAULT_OPTIONS, options);
+
   await Promise.all(
     [
       glob(path.join(context, '**', '*.js')).then(transformJsFiles),
