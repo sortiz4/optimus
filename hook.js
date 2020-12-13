@@ -15,14 +15,6 @@ function getPlatformBackupPath() {
   return `${getPlatformPath()}_backup`;
 }
 
-function shouldRunOptimus() {
-  switch (process.env.IONIC_CLI_HOOK_CTX_BUILD_CONFIGURATION) {
-    case 'production':
-      return true;
-  }
-  return false;
-}
-
 async function backupPlatformDirectory() {
   const source = getPlatformPath();
   const backup = getPlatformBackupPath();
@@ -43,6 +35,14 @@ async function restorePlatformDirectory() {
 
   // Remove the backup
   await fse.remove(backup);
+}
+
+function shouldRunOptimus() {
+  switch (process.env.IONIC_CLI_HOOK_CTX_BUILD_CONFIGURATION) {
+    case 'production':
+      return true;
+  }
+  return false;
 }
 
 async function hook(environment, options) {
