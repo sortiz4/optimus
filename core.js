@@ -54,7 +54,7 @@ function modules() {
         return new Svgo(options).optimize(content).then(o => o.data);
       },
       html(content, options) {
-        return Promise.resolve(htmlMinifier.minify(content, options));
+        return Promise.resolve().then(() => htmlMinifier.minify(content, options));
       },
     },
   };
