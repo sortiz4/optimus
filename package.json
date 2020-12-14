@@ -7,10 +7,10 @@
   "description": "A simple asset optimizer.",
   "homepage": "https://github.com/sortiz4/optimus",
   "dependencies": {
+    "csso": "^4.2.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "html-minifier": "^4.0.0",
-    "javascript-obfuscator": "^2.9.4",
     "lodash": "^4.17.20",
     "svgo": "^1.3.2",
     "terser": "^5.5.1"

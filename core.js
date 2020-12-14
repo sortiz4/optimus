@@ -10,6 +10,10 @@ const DEFAULT_OPTIONS = {
     nameCache: {
     },
   },
+  css: {
+    comments: false,
+    restructure: false,
+  },
   svg: {
     multipass: true,
     plugins: [
@@ -36,6 +40,7 @@ const DEFAULT_OPTIONS = {
 };
 
 function modules() {
+  const csso = require('csso');
   const glob = require('glob');
   const htmlMinifier = require('html-minifier');
   const merge = require('lodash/merge');
@@ -49,6 +54,9 @@ function modules() {
     optimize: {
       js(content, options) {
         return terser.minify(content, options).then(o => o.code);
+      },
+      css(content, options) {
+        return Promise.resolve().then(() => csso.minify(content, options).css);
       },
       svg(content, options) {
         return new Svgo(options).optimize(content).then(o => o.data);
@@ -75,6 +83,10 @@ async function optimus(context, options) {
     await Promise.all(files.map(transformJsFile));
   }
 
+  async function transformCssFiles(files) {
+    await Promise.all(files.map(transformCssFile));
+  }
+
   async function transformSvgFiles(files) {
     await Promise.all(files.map(transformSvgFile));
   }
@@ -85,6 +97,10 @@ async function optimus(context, options) {
 
   async function transformJsFile(file) {
     await transformFile(optimize.js, mergedOptions.js, file);
+  }
+
+  async function transformCssFile(file) {
+    await transformFile(optimize.css, mergedOptions.css, file);
   }
 
   async function transformSvgFile(file) {
@@ -101,6 +117,7 @@ async function optimus(context, options) {
     [
       glob(path.join(context, '**', '*.js')).then(transformJsFiles),
       glob(path.join(context, '**', '*.map')).then(removeMapFiles),
+      glob(path.join(context, '**', '*.css')).then(transformCssFiles),
       glob(path.join(context, '**', '*.svg')).then(transformSvgFiles),
       glob(path.join(context, '**', '*.html')).then(transformHtmlFiles),
     ],
