@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { glob, merge, optimize } = modules();
+const { createSvgPlugins, glob, merge, optimize } = modules();
 
 const DEFAULT_OPTIONS = {
   js: {
@@ -16,22 +16,22 @@ const DEFAULT_OPTIONS = {
   },
   svg: {
     multipass: true,
-    plugins: [
-      { cleanupAttrs: false },
-      { cleanupEnableBackground: false },
-      { cleanupIDs: false },
-      { cleanupNumericValues: false },
-      { convertColors: false },
-      { convertEllipseToCircle: false },
-      { convertPathData: false },
-      { convertShapeToPath: false },
-      { mergePaths: false },
-      { removeTitle: false },
-      { removeUnknownsAndDefaults: false },
-      { removeUselessStrokeAndFill: false },
-      { removeViewBox: false },
-      { removeXMLProcInst: false },
-    ],
+    plugins: createSvgPlugins(
+      { name: 'cleanupAttrs', active: false },
+      { name: 'cleanupEnableBackground', active: false },
+      { name: 'cleanupIDs', active: false },
+      { name: 'cleanupNumericValues', active: false },
+      { name: 'convertColors', active: false },
+      { name: 'convertEllipseToCircle', active: false },
+      { name: 'convertPathData', active: false },
+      { name: 'convertShapeToPath', active: false },
+      { name: 'mergePaths', active: false },
+      { name: 'removeTitle', active: false },
+      { name: 'removeUnknownsAndDefaults', active: false },
+      { name: 'removeUselessStrokeAndFill', active: false },
+      { name: 'removeViewBox', active: false },
+      { name: 'removeXMLProcInst', active: false },
+    ),
   },
   html: {
     collapseWhitespace: true,
@@ -44,7 +44,7 @@ function modules() {
   const glob = require('glob');
   const htmlMinifier = require('html-minifier');
   const merge = require('lodash/merge');
-  const Svgo = require('svgo');
+  const svgo = require('svgo');
   const terser = require('terser');
   const util = require('util');
 
@@ -59,11 +59,14 @@ function modules() {
         return Promise.resolve().then(() => csso.minify(content, options).css);
       },
       svg(content, options) {
-        return new Svgo(options).optimize(content).then(o => o.data);
+        return Promise.resolve().then(() => svgo.optimize(content, options).data);
       },
       html(content, options) {
         return Promise.resolve().then(() => htmlMinifier.minify(content, options));
       },
+    },
+    createSvgPlugins(...plugins) {
+      return svgo.extendDefaultPlugins(plugins);
     },
   };
 }
