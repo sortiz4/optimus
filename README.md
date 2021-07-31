@@ -1,7 +1,7 @@
 # Optimus
-Optimus is a simple web asset optimizer that combines a few different tools. It
-is primarily intended to be used with Ionic + Cordova as a build hook, but it
-can be integrated with other tools.
+Optimus is an asset optimizer and obfuscator that combines several tools. It
+can be configured and integrated with other processes as a hook or script for
+both client and server distributions.
 
 ## Usage
 Add the GitHub path to your dependencies in `project.json`.
@@ -11,8 +11,8 @@ Add the GitHub path to your dependencies in `project.json`.
 ```
 
 Import the the `optimus` function and call it with a `glob` compatible path and
-your own options. All files will be modified in-place and your options will be
-deep-merged with these [defaults][1].
+your own options. All files will be modified in-place and your options will
+replace these [defaults][1].
 
 ```js
 const { optimus } = require('optimus');

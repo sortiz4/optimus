@@ -86,7 +86,7 @@ async function hook(environment, options) {
   }
 
   function runIonicHook() {
-    // We need to save some environment variables that aren't available to Cordova hooks
+    // We need to save some environment variables that aren't available in Cordova hooks
     process.env.IONIC_CLI_HOOK_CTX_BUILD_DIR = environment.project.dir;
     process.env.IONIC_CLI_HOOK_CTX_BUILD_PLATFORM = environment.build.platform;
     process.env.IONIC_CLI_HOOK_CTX_BUILD_CONFIGURATION = environment.build.configuration;
