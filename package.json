@@ -3,9 +3,9 @@
   "author": "Steven Ortiz",
   "version": "1.0.0",
   "license": "MIT",
-  "main": "index.js",
   "description": "A simple asset optimizer.",
   "homepage": "https://github.com/sortiz4/optimus",
+  "main": "index.js",
   "dependencies": {
     "csso": "^4.2.0",
     "fs-extra": "^10.0.0",
@@ -14,6 +14,14 @@
     "javascript-obfuscator": "^2.18.1",
     "svgo": "^2.3.1",
     "terser": "^5.7.1"
+  },
+  "devDependencies": {
+    "@types/csso": "^4.2.0",
+    "@types/fs-extra": "^9.0.12",
+    "@types/glob": "^7.1.4",
+    "@types/html-minifier": "^4.0.1",
+    "@types/node": "^16.4.13",
+    "@types/svgo": "^2.3.1"
   },
   "scripts": {
     "clean": "rm -rf node_modules package-lock.json"

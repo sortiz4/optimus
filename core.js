@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fse = require('fs-extra');
 const path = require('path');
 const { glob, optimize, obfuscate } = modules();
 
@@ -109,13 +109,13 @@ function modules() {
 
 async function optimus(root, options) {
   async function transformFile(transformer, options, file, i) {
-    const original = await fs.promises.readFile(file, 'utf-8');
+    const original = await fse.readFile(file, 'utf-8');
     const modified = await transformer(original, options, i);
-    await fs.promises.writeFile(file, modified);
+    await fse.writeFile(file, modified);
   }
 
   async function removeFiles(files) {
-    await Promise.all(files.map(fs.promises.unlink));
+    await Promise.all(files.map(fse.unlink));
   }
 
   async function collectFiles(extension) {
