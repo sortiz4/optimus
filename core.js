@@ -3,7 +3,7 @@ const path = require('path');
 const { glob, optimize, obfuscate } = modules();
 
 const OPTIONS_MOBILE = {
-  mode: 'mobile',
+  name: 'mobile',
   remove: [
     '*.map',
     '*.d.ts',
@@ -75,7 +75,7 @@ const OPTIONS_MOBILE = {
 };
 
 const OPTIONS_SERVER = {
-  mode: 'server',
+  name: 'server',
   remove: [
     '*.coffee',
     '*.jst',
@@ -346,21 +346,21 @@ async function optimus(root, options) {
     await runObfuscateJs();
   }
 
-  function getDefaultOptions(mode) {
-    switch (mode) {
-      case OPTIONS_MOBILE.mode:
+  function getDefaultOptions(name) {
+    switch (name) {
+      case OPTIONS_MOBILE.name:
         return OPTIONS_MOBILE;
-      case OPTIONS_SERVER.mode:
+      case OPTIONS_SERVER.name:
         return OPTIONS_SERVER;
     }
     return OPTIONS_SERVER;
   }
 
   function getMergedOptions() {
-    const defaultOptions = getDefaultOptions(options?.mode);
+    const defaultOptions = getDefaultOptions(options?.name);
 
     return {
-      mode: options?.mode ?? defaultOptions.mode,
+      name: options?.name ?? defaultOptions.name,
       remove: options?.remove ?? defaultOptions.remove,
       optimize: {
         js: {

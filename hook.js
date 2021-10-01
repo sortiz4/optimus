@@ -65,7 +65,7 @@ async function hook(environment, options) {
       await backupPlatformDirectory();
 
       // Run Optimus on all of our source directories
-      await optimus(`{${sources.join(',')}}`, Object.assign({ mode: OPTIONS_MOBILE.mode }, options));
+      await optimus(`{${sources.join(',')}}`, Object.assign({ name: OPTIONS_MOBILE.name }, options));
     }
   }
 

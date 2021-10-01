@@ -12,21 +12,21 @@ async function main() {
       description: 'The configuration file to use',
     };
 
-    const modeOptions = {
-      alias: 'mode',
+    const methodOptions = {
+      alias: 'method',
       string: true,
       choices: [
-        OPTIONS_MOBILE.mode,
-        OPTIONS_SERVER.mode,
+        OPTIONS_MOBILE.name,
+        OPTIONS_SERVER.name,
       ],
-      description: 'The name of the mode to use',
+      description: 'The name of the method to use',
     };
 
     return (
       yargs(process.argv.slice(2))
         .usage(`Usage: $0 [options] [paths]`)
         .option('c', configOptions)
-        .option('m', modeOptions)
+        .option('m', methodOptions)
         .scriptName(name)
         .version(version)
         .help()
@@ -37,8 +37,8 @@ async function main() {
   }
 
   function getOptimusOptions() {
-    if (commandOptions.mode) {
-      return { mode: commandOptions.mode };
+    if (commandOptions.name) {
+      return { name: commandOptions.name };
     }
     return require(path.resolve(commandOptions.config));
   }
@@ -50,7 +50,9 @@ async function main() {
   const commandOptions = getCommandOptions();
   const optimusOptions = getOptimusOptions();
 
-  await Promise.all(commandOptions._.map(runOptimus));
+  if (commandOptions._.length > 0) {
+    await Promise.all(commandOptions._.map(runOptimus));
+  }
 }
 
 if (require.main === module) {

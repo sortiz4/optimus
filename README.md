@@ -11,15 +11,15 @@ Add the GitHub path to your dependencies in `project.json`.
 ```
 
 As a command, `optimus` can be called with a list of `glob` compatible paths
-and a mode or a configuration file. Import and extend one of the default
-[options][1] or create your own.
+and a method name or a configuration file. Import and extend one of the
+[default][1] options or create your own.
 
 ```sh
 Usage: optimus [options] [paths]
 
 Options:
   -c, --config   The configuration file to use     [string] [default: "optimus.config.js"]
-  -m, --mode     The name of the mode to use        [string] [choices: "mobile", "server"]
+  -m, --method   The name of the method to use      [string] [choices: "mobile", "server"]
   -h, --help     Show help                                                       [boolean]
   -v, --version  Show version number                                             [boolean]
 ```
