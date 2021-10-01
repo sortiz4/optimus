@@ -4,10 +4,14 @@ can be configured and integrated with other processes as a hook or script for
 both client and server distributions.
 
 ## Usage
-Optimus can be installed locally or globally.
+Optimus can be installed as a global command or local package.
 
 ```sh
-npm install [-s] [-g] github:sortiz4/optimus#1.0.0
+npm install -g github:sortiz4/optimus#1.0.0
+```
+
+```json
+"optimus": "github:sortiz4/optimus#1.0.0"
 ```
 
 As a command, `optimus` can be called with a list of `glob` compatible paths
