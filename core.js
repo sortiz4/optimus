@@ -243,6 +243,22 @@ async function optimus(root, options) {
     return await glob(path.join(root, '**', name));
   }
 
+  async function removeEmpties(parent) {
+    const stat = await fse.lstat(parent);
+
+    if (stat.isDirectory()) {
+      for (const node of await fse.readdir(parent)) {
+        await removeEmpties(path.join(parent, node));
+      }
+
+      const nodes = await fse.readdir(parent);
+
+      if (nodes.length === 0) {
+        await fse.rmdir(parent);
+      }
+    }
+  }
+
   async function removeFiles(files) {
     await Promise.all(files.map(fse.remove));
   }
@@ -327,6 +343,10 @@ async function optimus(root, options) {
     }
   }
 
+  async function runClean() {
+    await removeEmpties(root);
+  }
+
   async function runRemove() {
     await Promise.all(mergedOptions.remove.map(collectFiles)).then(removeFilesMatrix);
   }
@@ -394,6 +414,7 @@ async function optimus(root, options) {
   await runObfuscate();
   await runOptimize();
   await runRemove();
+  await runClean();
 }
 
 module.exports = {
