@@ -5,15 +5,28 @@ const { name, version } = require('./package.json');
 
 async function main() {
   function getCommandOptions() {
-    const modes = [
-      OPTIONS_MOBILE.mode,
-      OPTIONS_SERVER.mode,
-    ];
+    const configOptions = {
+      alias: 'config',
+      string: true,
+      default: 'optimus.config.js',
+      description: 'The configuration file to use',
+    };
+
+    const modeOptions = {
+      alias: 'mode',
+      string: true,
+      choices: [
+        OPTIONS_MOBILE.mode,
+        OPTIONS_SERVER.mode,
+      ],
+      description: 'The name of the mode to use',
+    };
+
     return (
       yargs(process.argv.slice(2))
         .usage(`Usage: $0 [options] [paths]`)
-        .option('c', { alias: 'config', string: true, default: 'optimus.config.js', description: 'The configuration file to use' })
-        .option('m', { alias: 'mode', string: true, choices: modes, description: 'The name of the mode to use' })
+        .option('c', configOptions)
+        .option('m', modeOptions)
         .scriptName(name)
         .version(version)
         .help()
