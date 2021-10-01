@@ -10,9 +10,22 @@ Add the GitHub path to your dependencies in `project.json`.
 "optimus": "sortiz4/optimus"
 ```
 
-Import the the `optimus` function and call it with a `glob` compatible path and
-your own options. All files will be modified in-place and your options will
-replace these [defaults][1].
+As a command, `optimus` can be called with a list of `glob` compatible paths
+and a mode or a configuration file. Import and extend one of the default
+[options][1] or create your own.
+
+```sh
+Usage: optimus [options] [paths]
+
+Options:
+  -c, --config   The configuration file to use     [string] [default: "optimus.config.js"]
+  -m, --mode     The name of the mode to use        [string] [choices: "mobile", "server"]
+  -h, --help     Show help                                                       [boolean]
+  -v, --version  Show version number                                             [boolean]
+```
+
+Much like the command, the `optimus` function can be called with a `glob`
+compatible path and your own options based on these [defaults][1].
 
 ```js
 const { optimus } = require('optimus');

@@ -6,22 +6,25 @@
   "description": "A simple asset optimizer.",
   "homepage": "https://github.com/sortiz4/optimus",
   "main": "index.js",
+  "bin": "cli.js",
   "dependencies": {
     "csso": "^4.2.0",
     "fs-extra": "^10.0.0",
-    "glob": "^7.1.7",
+    "glob": "^7.2.0",
     "html-minifier": "^4.0.0",
-    "javascript-obfuscator": "^2.18.1",
-    "svgo": "^2.3.1",
-    "terser": "^5.7.1"
+    "javascript-obfuscator": "^2.19.0",
+    "svgo": "^2.7.0",
+    "terser": "^5.9.0",
+    "yargs": "^17.2.1"
   },
   "devDependencies": {
     "@types/csso": "^4.2.0",
-    "@types/fs-extra": "^9.0.12",
+    "@types/fs-extra": "^9.0.13",
     "@types/glob": "^7.1.4",
     "@types/html-minifier": "^4.0.1",
-    "@types/node": "^16.4.13",
-    "@types/svgo": "^2.3.1"
+    "@types/node": "^16.10.2",
+    "@types/svgo": "^2.4.2",
+    "@types/yargs": "^17.0.3"
   },
   "scripts": {
     "clean": "rm -rf node_modules package-lock.json"

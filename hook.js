@@ -1,6 +1,6 @@
 const fse = require('fs-extra');
 const path = require('path');
-const { optimus } = require('./core');
+const { OPTIONS_MOBILE, optimus } = require('./core');
 
 function getPlatformPath() {
   switch (process.env.IONIC_CLI_HOOK_CTX_BUILD_PLATFORM) {
@@ -65,7 +65,7 @@ async function hook(environment, options) {
       await backupPlatformDirectory();
 
       // Run Optimus on all of our source directories
-      await optimus(`{${sources.join(',')}}`, options);
+      await optimus(`{${sources.join(',')}}`, Object.assign({ mode: OPTIONS_MOBILE.mode }, options));
     }
   }
 

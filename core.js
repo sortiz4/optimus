@@ -2,12 +2,13 @@ const fse = require('fs-extra');
 const path = require('path');
 const { glob, optimize, obfuscate } = modules();
 
-const OPTIONS = {
-  remove: {
-    sourceMaps: true,
-    typeDefinitions: true,
-    typeScriptArtifacts: true,
-  },
+const OPTIONS_MOBILE = {
+  mode: 'mobile',
+  remove: [
+    '*.map',
+    '*.d.ts',
+    '*.tsbuildinfo',
+  ],
   optimize: {
     js: {
       enabled: true,
@@ -31,20 +32,27 @@ const OPTIONS = {
       options: {
         multipass: true,
         plugins: [
-          { name: 'cleanupAttrs', active: false },
-          { name: 'cleanupEnableBackground', active: false },
-          { name: 'cleanupIDs', active: false },
-          { name: 'cleanupNumericValues', active: false },
-          { name: 'convertColors', active: false },
-          { name: 'convertEllipseToCircle', active: false },
-          { name: 'convertPathData', active: false },
-          { name: 'convertShapeToPath', active: false },
-          { name: 'mergePaths', active: false },
-          { name: 'removeTitle', active: false },
-          { name: 'removeUnknownsAndDefaults', active: false },
-          { name: 'removeUselessStrokeAndFill', active: false },
-          { name: 'removeViewBox', active: false },
-          { name: 'removeXMLProcInst', active: false },
+          {
+            name: 'preset-default',
+            params: {
+              overrides: {
+                cleanupAttrs: false,
+                cleanupEnableBackground: false,
+                cleanupIDs: false,
+                cleanupNumericValues: false,
+                convertColors: false,
+                convertEllipseToCircle: false,
+                convertPathData: false,
+                convertShapeToPath: false,
+                mergePaths: false,
+                removeTitle: false,
+                removeUnknownsAndDefaults: false,
+                removeUselessStrokeAndFill: false,
+                removeViewBox: false,
+                removeXMLProcInst: false,
+              },
+            },
+          },
         ],
       },
     },
@@ -62,6 +70,133 @@ const OPTIONS = {
       options: {
         optionsPreset: 'default',
       },
+    },
+  },
+};
+
+const OPTIONS_SERVER = {
+  mode: 'server',
+  remove: [
+    '*.coffee',
+    '*.jst',
+    '*.markdown',
+    '*.md',
+    '*.mkd',
+    '*.swp',
+    '*.tgz',
+    '*.ts',
+    '*.tsbuildinfo',
+    '.*ignore',
+    '.DS_Store',
+    '.appveyor.yml',
+    '.babelrc',
+    '.circleci',
+    '.coveralls.yml',
+    '.documentup.json',
+    '.editorconfig',
+    '.eslintignore',
+    '.eslintrc',
+    '.eslintrc.js',
+    '.eslintrc.json',
+    '.eslintrc.yml',
+    '.flowconfig',
+    '.gitattributes',
+    '.github',
+    '.gitlab-ci.yml',
+    '.htmllintrc',
+    '.idea',
+    '.jshintrc',
+    '.lint',
+    '.npmignore',
+    '.npmrc',
+    '.nyc_output',
+    '.prettierrc',
+    '.prettierrc.js',
+    '.prettierrc.json',
+    '.prettierrc.toml',
+    '.prettierrc.yml',
+    '.stylelintrc',
+    '.stylelintrc.js',
+    '.stylelintrc.json',
+    '.stylelintrc.yaml',
+    '.stylelintrc.yml',
+    '.tern-project',
+    '.travis.yml',
+    '.vscode',
+    '.yarn-integrity',
+    '.yarn-metadata.json',
+    '.yarnclean',
+    '.yo-rc.json',
+    'AUTHORS',
+    'CHANGES',
+    'CONTRIBUTORS',
+    'Gruntfile.js',
+    'Gulpfile.js',
+    'Jenkinsfile',
+    'LICENCE',
+    'LICENCE-MIT',
+    'LICENCE.BSD',
+    'LICENCE.txt',
+    'LICENSE',
+    'LICENSE-MIT',
+    'LICENSE.BSD',
+    'LICENSE.txt',
+    'Makefile',
+    '__tests__',
+    '_config.yml',
+    'appveyor.yml',
+    'assets',
+    'changelog',
+    'circle.yml',
+    'codeship-services.yml',
+    'codeship-steps.yml',
+    'coverage',
+    'doc',
+    'docs',
+    'eslint',
+    'example',
+    'examples',
+    'gulpfile.js',
+    'htmllint.js',
+    'images',
+    'jest.config.js',
+    'karma.conf.js',
+    'licence',
+    'license',
+    'powered-test',
+    'prettier.config.js',
+    'stylelint.config.js',
+    'test',
+    'tests',
+    'tsconfig.json',
+    'tslint.json',
+    'wallaby.conf.js',
+    'wallaby.js',
+    'website',
+    'wercker.yml',
+  ],
+  optimize: {
+    js: {
+      enabled: false,
+      options: {},
+    },
+    css: {
+      enabled: false,
+      options: {},
+    },
+    svg: {
+      enabled: false,
+      options: {},
+    },
+    html: {
+      enabled: false,
+      options: {},
+    },
+  },
+  obfuscate: {
+    js: {
+      enabled: false,
+      options: {},
     },
   },
 };
@@ -85,11 +220,7 @@ function modules() {
         return Promise.resolve().then(() => csso.minify(content, options).css);
       },
       svg(content, options) {
-        const mergedOptions = {
-          ...options,
-          plugins: svgo.extendDefaultPlugins(options.plugins ?? []),
-        };
-        return Promise.resolve().then(() => svgo.optimize(content, mergedOptions).data);
+        return Promise.resolve().then(() => svgo.optimize(content, options).data);
       },
       html(content, options) {
         return Promise.resolve().then(() => htmlMinifier.minify(content, options));
@@ -108,18 +239,22 @@ function modules() {
 }
 
 async function optimus(root, options) {
+  async function collectFiles(name) {
+    return await glob(path.join(root, '**', name));
+  }
+
+  async function removeFiles(files) {
+    await Promise.all(files.map(fse.remove));
+  }
+
+  async function removeFilesMatrix(matrix) {
+    await Promise.all(matrix.map(removeFiles));
+  }
+
   async function transformFile(transformer, options, file, i) {
     const original = await fse.readFile(file, 'utf-8');
     const modified = await transformer(original, options, i);
     await fse.writeFile(file, modified);
-  }
-
-  async function removeFiles(files) {
-    await Promise.all(files.map(fse.unlink));
-  }
-
-  async function collectFiles(extension) {
-    return await glob(path.join(root, '**', extension));
   }
 
   async function optimizeJsFile(file) {
@@ -162,24 +297,6 @@ async function optimus(root, options) {
     await Promise.all(files.map(obfuscateJsFile));
   }
 
-  async function runRemoveSourceMaps() {
-    if (mergedOptions.remove.sourceMaps) {
-      await collectFiles('*.map').then(removeFiles);
-    }
-  }
-
-  async function runRemoveTypeDefinitions() {
-    if (mergedOptions.remove.typeDefinitions) {
-      await collectFiles('*.d.ts').then(removeFiles);
-    }
-  }
-
-  async function runRemoveTypeScriptArtifacts() {
-    if (mergedOptions.remove.typeDefinitions) {
-      await collectFiles('*.tsbuildinfo').then(removeFiles);
-    }
-  }
-
   async function runOptimizeJs() {
     if (mergedOptions.optimize.js.enabled) {
       await collectFiles('*.js').then(optimizeJsFiles);
@@ -211,13 +328,7 @@ async function optimus(root, options) {
   }
 
   async function runRemove() {
-    await Promise.all(
-      [
-        runRemoveSourceMaps(),
-        runRemoveTypeDefinitions(),
-        runRemoveTypeScriptArtifacts(),
-      ],
-    );
+    await Promise.all(mergedOptions.remove.map(collectFiles)).then(removeFilesMatrix);
   }
 
   async function runOptimize() {
@@ -235,37 +346,50 @@ async function optimus(root, options) {
     await runObfuscateJs();
   }
 
-  const mergedOptions = {
-    remove: {
-      sourceMaps: options?.remove?.sourceMaps ?? OPTIONS.remove.sourceMaps,
-      typeDefinitions: options?.remove?.typeDefinitions ?? OPTIONS.remove.typeDefinitions,
-      typeScriptArtifacts: options?.remove?.typeScriptArtifacts ?? OPTIONS.remove.typeScriptArtifacts,
-    },
-    optimize: {
-      js: {
-        enabled: options?.optimize?.js?.enabled ?? OPTIONS.optimize.js.enabled,
-        options: options?.optimize?.js?.options ?? OPTIONS.optimize.js.options,
+  function getDefaultOptions(mode) {
+    switch (mode) {
+      case OPTIONS_MOBILE.mode:
+        return OPTIONS_MOBILE;
+      case OPTIONS_SERVER.mode:
+        return OPTIONS_SERVER;
+    }
+    return OPTIONS_SERVER;
+  }
+
+  function getMergedOptions() {
+    const defaultOptions = getDefaultOptions(options?.mode);
+
+    return {
+      mode: options?.mode ?? defaultOptions.mode,
+      remove: options?.remove ?? defaultOptions.remove,
+      optimize: {
+        js: {
+          enabled: options?.optimize?.js?.enabled ?? defaultOptions.optimize.js.enabled,
+          options: options?.optimize?.js?.options ?? defaultOptions.optimize.js.options,
+        },
+        css: {
+          enabled: options?.optimize?.css?.enabled ?? defaultOptions.optimize.css.enabled,
+          options: options?.optimize?.css?.options ?? defaultOptions.optimize.css.options,
+        },
+        svg: {
+          enabled: options?.optimize?.svg?.enabled ?? defaultOptions.optimize.svg.enabled,
+          options: options?.optimize?.svg?.options ?? defaultOptions.optimize.svg.options,
+        },
+        html: {
+          enabled: options?.optimize?.html?.enabled ?? defaultOptions.optimize.html.enabled,
+          options: options?.optimize?.html?.options ?? defaultOptions.optimize.html.options,
+        },
       },
-      css: {
-        enabled: options?.optimize?.css?.enabled ?? OPTIONS.optimize.css.enabled,
-        options: options?.optimize?.css?.options ?? OPTIONS.optimize.css.options,
+      obfuscate: {
+        js: {
+          enabled: options?.obfuscate?.js?.enabled ?? defaultOptions.obfuscate.js.enabled,
+          options: options?.obfuscate?.js?.options ?? defaultOptions.obfuscate.js.options,
+        },
       },
-      svg: {
-        enabled: options?.optimize?.svg?.enabled ?? OPTIONS.optimize.svg.enabled,
-        options: options?.optimize?.svg?.options ?? OPTIONS.optimize.svg.options,
-      },
-      html: {
-        enabled: options?.optimize?.html?.enabled ?? OPTIONS.optimize.html.enabled,
-        options: options?.optimize?.html?.options ?? OPTIONS.optimize.html.options,
-      },
-    },
-    obfuscate: {
-      js: {
-        enabled: options?.obfuscate?.js?.enabled ?? OPTIONS.obfuscate.js.enabled,
-        options: options?.obfuscate?.js?.options ?? OPTIONS.obfuscate.js.options,
-      },
-    },
-  };
+    };
+  }
+
+  const mergedOptions = getMergedOptions();
 
   await runObfuscate();
   await runOptimize();
@@ -273,5 +397,7 @@ async function optimus(root, options) {
 }
 
 module.exports = {
+  OPTIONS_MOBILE,
+  OPTIONS_SERVER,
   optimus,
 };
