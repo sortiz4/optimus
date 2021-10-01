@@ -239,7 +239,7 @@ function modules() {
 }
 
 async function optimus(root, options) {
-  async function collectFiles(name) {
+  async function collectNodes(name) {
     return await glob(path.join(root, '**', name));
   }
 
@@ -259,12 +259,16 @@ async function optimus(root, options) {
     }
   }
 
-  async function removeFiles(files) {
-    await Promise.all(files.map(fse.remove));
+  async function removeNode(node) {
+    await fse.remove(node);
   }
 
-  async function removeFilesMatrix(matrix) {
-    await Promise.all(matrix.map(removeFiles));
+  async function removeNodes(nodes) {
+    await Promise.all(nodes.map(removeNode));
+  }
+
+  async function removeNodesMatrix(matrix) {
+    await Promise.all(matrix.map(removeNodes));
   }
 
   async function transformFile(transformer, options, file, i) {
@@ -315,31 +319,31 @@ async function optimus(root, options) {
 
   async function runOptimizeJs() {
     if (mergedOptions.optimize.js.enabled) {
-      await collectFiles('*.js').then(optimizeJsFiles);
+      await collectNodes('*.js').then(optimizeJsFiles);
     }
   }
 
   async function runOptimizeCss() {
     if (mergedOptions.optimize.css.enabled) {
-      await collectFiles('*.css').then(optimizeCssFiles);
+      await collectNodes('*.css').then(optimizeCssFiles);
     }
   }
 
   async function runOptimizeSvg() {
     if (mergedOptions.optimize.svg.enabled) {
-      await collectFiles('*.svg').then(optimizeSvgFiles);
+      await collectNodes('*.svg').then(optimizeSvgFiles);
     }
   }
 
   async function runOptimizeHtml() {
     if (mergedOptions.optimize.html.enabled) {
-      await collectFiles('*.html').then(optimizeHtmlFiles);
+      await collectNodes('*.html').then(optimizeHtmlFiles);
     }
   }
 
   async function runObfuscateJs() {
     if (mergedOptions.obfuscate.js.enabled) {
-      await collectFiles('*.js').then(obfuscateJsFiles);
+      await collectNodes('*.js').then(obfuscateJsFiles);
     }
   }
 
@@ -348,7 +352,7 @@ async function optimus(root, options) {
   }
 
   async function runRemove() {
-    await Promise.all(mergedOptions.remove.map(collectFiles)).then(removeFilesMatrix);
+    await Promise.all(mergedOptions.remove.map(collectNodes)).then(removeNodesMatrix);
   }
 
   async function runOptimize() {

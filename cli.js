@@ -38,8 +38,8 @@ async function main() {
   }
 
   function getOptimusOptions() {
-    if (commandOptions.name) {
-      return { name: commandOptions.name };
+    if (commandOptions.method) {
+      return { name: commandOptions.method };
     }
     return require(path.resolve(commandOptions.config));
   }
