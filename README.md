@@ -4,10 +4,10 @@ can be configured and integrated with other processes as a hook or script for
 both client and server distributions.
 
 ## Usage
-Add the GitHub path to your dependencies in `project.json`.
+Optimus can be installed locally or globally.
 
-```json
-"optimus": "sortiz4/optimus"
+```sh
+npm install [-s] [-g] github:sortiz4/optimus#1.0.0
 ```
 
 As a command, `optimus` can be called with a list of `glob` compatible paths
@@ -25,12 +25,13 @@ Options:
 ```
 
 Much like the command, the `optimus` function can be called with a `glob`
-compatible path and your own options based on these [defaults][1].
+compatible path and your own options based on these [defaults][1]. The
+associated options will be selected when a name is given.
 
 ```js
 const { optimus } = require('optimus');
 
-await optimus('path/to/www', options);
+await optimus('path/to/www', { name: 'mobile' });
 ```
 
 As an Ionic + Cordova hook, the API is similar. Import the `hook` function and
@@ -40,7 +41,7 @@ under `build:after`, `before_build`, and `after_build`.
 ```js
 const { hook } = require('optimus');
 
-module.exports = environment => hook(environment, options);
+module.exports = environment => hook(environment, { name: 'mobile' });
 ```
 
 [1]: https://github.com/sortiz4/optimus/blob/master/core.js#L5
