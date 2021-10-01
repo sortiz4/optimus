@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const path = require('path');
 const yargs = require('yargs');
 const { OPTIONS_MOBILE, OPTIONS_SERVER, optimus } = require('./core');
