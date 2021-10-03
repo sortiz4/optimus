@@ -34,7 +34,7 @@ async function main() {
         .alias({ h: 'help', v: 'version' })
         .wrap(90)
         .argv
-    )
+    );
   }
 
   function getOptimusOptions() {
