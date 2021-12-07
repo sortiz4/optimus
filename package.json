@@ -1,7 +1,7 @@
 {
   "name": "optimus",
   "author": "Steven Ortiz",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "MIT",
   "description": "A simple asset optimizer.",
   "homepage": "https://github.com/sortiz4/optimus",
