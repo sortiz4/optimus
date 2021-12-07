@@ -45,7 +45,7 @@ function shouldRunOptimus() {
   return false;
 }
 
-async function hook(environment, options) {
+async function cordova(environment, options) {
   function isCordovaHook() {
     return typeof environment.hook === 'string';
   }
@@ -102,5 +102,5 @@ async function hook(environment, options) {
 }
 
 module.exports = {
-  hook,
+  cordova,
 };

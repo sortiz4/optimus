@@ -6,7 +6,7 @@
   "description": "A simple asset optimizer.",
   "homepage": "https://github.com/sortiz4/optimus",
   "main": "index.js",
-  "bin": "cli.js",
+  "bin": "command.js",
   "dependencies": {
     "csso": "^4.2.0",
     "fs-extra": "^10.0.0",

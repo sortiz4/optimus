@@ -35,7 +35,7 @@ associated options will be selected when an options name is given.
 ```js
 const { optimus } = require('optimus');
 
-await optimus('path/to/www', { name: 'mobile' });
+await optimus('node_modules', { name: 'server' });
 ```
 
 As an Ionic + Cordova hook, the API is similar. Import the `hook` function and
@@ -43,9 +43,9 @@ export it as-is or call it with your own options. The hook should be added
 under `build:after`, `before_build`, and `after_build`.
 
 ```js
-const { hook } = require('optimus');
+const { cordova } = require('optimus');
 
-module.exports = environment => hook(environment, { name: 'mobile' });
+module.exports = environment => cordova(environment, { name: 'mobile' });
 ```
 
 [1]: https://github.com/sortiz4/optimus/blob/master/core.js#L5
