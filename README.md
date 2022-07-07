@@ -48,4 +48,4 @@ const { cordova } = require('optimus');
 module.exports = environment => cordova(environment, { name: 'mobile' });
 ```
 
-[1]: https://github.com/sortiz4/optimus/blob/master/core.js#L5
+[1]: https://github.com/sortiz4/optimus/blob/master/src/core.js#L5

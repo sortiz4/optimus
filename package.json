@@ -5,8 +5,8 @@
   "license": "MIT",
   "description": "A simple asset optimizer.",
   "homepage": "https://github.com/sortiz4/optimus",
-  "main": "index.js",
-  "bin": "command.js",
+  "main": "./src/index.js",
+  "bin": "./src/command.js",
   "dependencies": {
     "csso": "^4.2.0",
     "fs-extra": "^10.0.0",
@@ -24,9 +24,15 @@
     "@types/html-minifier": "^4.0.1",
     "@types/node": "^16.10.2",
     "@types/svgo": "^2.4.2",
-    "@types/yargs": "^17.0.3"
+    "@types/yargs": "^17.0.3",
+    "eslint": "^7.28.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jsdoc": "^35.3.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3"
+
   },
   "scripts": {
-    "clean": "rm -rf node_modules package-lock.json"
+    "clean": "rm -rf node_modules package-lock.json",
+    "lint": "eslint ."
   }
 }
