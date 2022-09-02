@@ -1,5 +1,5 @@
-const fse = require('fs-extra');
-const path = require('path');
+const fs = require('fs-extra');
+const path = require('node:path');
 const { OPTIONS_MOBILE, optimus } = require('./core');
 
 function getPlatformPath() {
@@ -20,7 +20,7 @@ async function backupPlatformDirectory() {
   const backup = getPlatformBackupPath();
 
   // Create the backup
-  await fse.copy(source, backup);
+  await fs.copy(source, backup);
 }
 
 async function restorePlatformDirectory() {
@@ -28,13 +28,13 @@ async function restorePlatformDirectory() {
   const backup = getPlatformBackupPath();
 
   // Remove the modified source
-  await fse.remove(source);
+  await fs.remove(source);
 
   // Restore the original source
-  await fse.copy(backup, source);
+  await fs.copy(backup, source);
 
   // Remove the backup
-  await fse.remove(backup);
+  await fs.remove(backup);
 }
 
 function shouldRunOptimus() {

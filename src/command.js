@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-const path = require('path');
+const path = require('node:path');
 const yargs = require('yargs');
 const { OPTIONS_MOBILE, OPTIONS_SERVER, optimus } = require('./core');
-const { name, version } = require('./package.json');
+const { name, version } = require('../package.json');
 
 async function main() {
   function getCommandOptions() {

@@ -1,5 +1,5 @@
-const fse = require('fs-extra');
-const path = require('path');
+const fs = require('fs-extra');
+const path = require('node:path');
 const { glob, optimize, obfuscate } = modules();
 
 const OPTIONS_MOBILE = {
@@ -206,15 +206,18 @@ function modules() {
   const glob = require('glob');
   const htmlMinifier = require('html-minifier');
   const javascriptObfuscator = require('javascript-obfuscator');
+  const util = require('node:util');
   const svgo = require('svgo');
   const terser = require('terser');
-  const util = require('util');
 
   return {
     glob: util.promisify(glob),
     optimize: {
       js(content, options) {
         return terser.minify(content, options).then(o => o.code);
+      },
+      json(content, _) {
+        return JSON.stringify(JSON.parse(content));
       },
       css(content, options) {
         return Promise.resolve().then(() => csso.minify(content, options).css);
@@ -244,23 +247,23 @@ async function optimus(root, options) {
   }
 
   async function removeEmpties(parent) {
-    const stat = await fse.lstat(parent);
+    const stat = await fs.lstat(parent);
 
     if (stat.isDirectory()) {
-      for (const node of await fse.readdir(parent)) {
+      for (const node of await fs.readdir(parent)) {
         await removeEmpties(path.join(parent, node));
       }
 
-      const nodes = await fse.readdir(parent);
+      const nodes = await fs.readdir(parent);
 
       if (nodes.length === 0) {
-        await fse.rmdir(parent);
+        await fs.rmdir(parent);
       }
     }
   }
 
   async function removeNode(node) {
-    await fse.remove(node);
+    await fs.remove(node);
   }
 
   async function removeNodes(nodes) {
@@ -272,13 +275,17 @@ async function optimus(root, options) {
   }
 
   async function transformFile(transformer, options, file, i) {
-    const original = await fse.readFile(file, 'utf-8');
+    const original = await fs.readFile(file, 'utf-8');
     const modified = await transformer(original, options, i);
-    await fse.writeFile(file, modified);
+    await fs.writeFile(file, modified);
   }
 
   async function optimizeJsFile(file) {
     await transformFile(optimize.js, mergedOptions.optimize.js.options, file);
+  }
+
+  async function optimizeJsonFile(file) {
+    await transformFile(optimize.json, undefined, file);
   }
 
   async function optimizeCssFile(file) {
@@ -301,6 +308,10 @@ async function optimus(root, options) {
     await Promise.all(files.map(optimizeJsFile));
   }
 
+  async function optimizeJsonFiles(files) {
+    await Promise.all(files.map(optimizeJsonFile));
+  }
+
   async function optimizeCssFiles(files) {
     await Promise.all(files.map(optimizeCssFile));
   }
@@ -319,7 +330,12 @@ async function optimus(root, options) {
 
   async function runOptimizeJs() {
     if (mergedOptions.optimize.js.enabled) {
-      await collectNodes('*.js').then(optimizeJsFiles);
+      await Promise.all(
+        [
+          collectNodes('*.{js,cjs,mjs}').then(optimizeJsFiles),
+          collectNodes('*.{json,webmanifest}').then(optimizeJsonFiles),
+        ],
+      );
     }
   }
 
@@ -337,13 +353,13 @@ async function optimus(root, options) {
 
   async function runOptimizeHtml() {
     if (mergedOptions.optimize.html.enabled) {
-      await collectNodes('*.html').then(optimizeHtmlFiles);
+      await collectNodes('*.{htm,html}').then(optimizeHtmlFiles);
     }
   }
 
   async function runObfuscateJs() {
     if (mergedOptions.obfuscate.js.enabled) {
-      await collectNodes('*.js').then(obfuscateJsFiles);
+      await collectNodes('*.{js,cjs,mjs}').then(obfuscateJsFiles);
     }
   }
 
