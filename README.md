@@ -7,11 +7,11 @@ both client and server distributions.
 Optimus can be installed as a global command or local package.
 
 ```sh
-npm install -g github:sortiz4/optimus#1.2.0
+npm install -g github:sortiz4/optimus#1.3.0
 ```
 
 ```json
-"optimus": "github:sortiz4/optimus#1.2.0"
+"optimus": "github:sortiz4/optimus#1.3.0"
 ```
 
 As a command, `optimus` can be called with a list of `glob` compatible paths
@@ -22,7 +22,7 @@ and an options name or a configuration file. Import and extend one of the
 Usage: optimus [options] [paths]
 
 Options:
-  -c, --configuration  The configuration file to use        [string] [default: ".optimusrc.js"]
+  -c, --configuration  The configuration file to use      [string] [default: ".optimusrc.json"]
   -n, --name           The name of the options to use    [string] [choices: "mobile", "server"]
   -h, --help           Show help                                                      [boolean]
   -v, --version        Show version number                                            [boolean]
@@ -33,19 +33,23 @@ compatible path and your own options based on these [defaults][1]. The
 associated options will be selected when an options name is given.
 
 ```js
-const { optimus } = require('optimus');
+import { optimus } from 'optimus';
 
 await optimus('node_modules', { name: 'server' });
 ```
 
-As an Ionic + Cordova hook, the API is similar. Import the `hook` function and
-export it as-is or call it with your own options. The hook should be added
-under `build:after`, `before_build`, and `after_build`.
+As an Ionic + Cordova hook, the API is similar. Import the `cordova` function
+and call it with your own options. The hook should be added under
+`build:after`, `before_build`, and `after_build`.
 
 ```js
-const { cordova } = require('optimus');
+module.exports = async function(environment) {
+  // Cordova still uses Common JS so the hook must be imported like so
+  const { cordova } = await import('optimus');
 
-module.exports = environment => cordova(environment, { name: 'mobile' });
+  // Pass the environment and your options to the hook
+  await cordova(environment, { name: 'mobile' });
+};
 ```
 
 [1]: https://github.com/sortiz4/optimus/blob/master/src/core.js#L5

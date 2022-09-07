@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-const path = require('node:path');
-const yargs = require('yargs');
-const { OPTIONS_MOBILE, OPTIONS_SERVER, optimus } = require('./core');
-const { name, version } = require('../package.json');
+import fs from 'fs-extra';
+import yargs from 'yargs';
+import { OPTIONS_MOBILE, OPTIONS_SERVER, optimus } from './core.mjs';
+import definition from '../package.json' assert { type: 'json' };
 
 async function main() {
   function getCommandOptions() {
     const configurationOptions = {
       alias: 'configuration',
       string: true,
-      default: '.optimusrc.js',
+      default: '.optimusrc.json',
       description: 'The configuration file to use',
     };
 
@@ -28,8 +28,8 @@ async function main() {
         .usage(`Usage: $0 [options] [paths]`)
         .option('c', configurationOptions)
         .option('n', nameOptions)
-        .scriptName(name)
-        .version(version)
+        .scriptName(definition.name)
+        .version(definition.version)
         .help()
         .alias({ h: 'help', v: 'version' })
         .wrap(95)
@@ -37,11 +37,11 @@ async function main() {
     );
   }
 
-  function getOptimusOptions() {
+  async function getOptimusOptions() {
     if (commandOptions.name) {
       return { name: commandOptions.name };
     }
-    return require(path.resolve(commandOptions.configuration));
+    return await fs.readJSON(commandOptions.configuration);
   }
 
   async function runOptimus(name) {
@@ -49,13 +49,15 @@ async function main() {
   }
 
   const commandOptions = getCommandOptions();
-  const optimusOptions = getOptimusOptions();
+  const optimusOptions = await getOptimusOptions();
 
   if (commandOptions._.length > 0) {
     await Promise.all(commandOptions._.map(runOptimus));
   }
 }
 
-if (require.main === module) {
-  main().catch(error => console.error(error));
+try {
+  await main();
+} catch (error) {
+  console.error(error);
 }

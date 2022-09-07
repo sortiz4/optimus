@@ -1,8 +1,8 @@
-const fs = require('fs-extra');
-const path = require('node:path');
-const { glob, optimize, obfuscate } = modules();
+import fs from 'fs-extra';
+import path from 'node:path';
+import { glob, optimize, obfuscate } from './facade.mjs';
 
-const OPTIONS_MOBILE = {
+export const OPTIONS_MOBILE = {
   name: 'mobile',
   remove: [
     '*.map',
@@ -74,7 +74,7 @@ const OPTIONS_MOBILE = {
   },
 };
 
-const OPTIONS_SERVER = {
+export const OPTIONS_SERVER = {
   name: 'server',
   remove: [
     '*.coffee',
@@ -201,47 +201,7 @@ const OPTIONS_SERVER = {
   },
 };
 
-function modules() {
-  const csso = require('csso');
-  const glob = require('glob');
-  const htmlMinifier = require('html-minifier');
-  const javascriptObfuscator = require('javascript-obfuscator');
-  const util = require('node:util');
-  const svgo = require('svgo');
-  const terser = require('terser');
-
-  return {
-    glob: util.promisify(glob),
-    optimize: {
-      js(content, options) {
-        return terser.minify(content, options).then(o => o.code);
-      },
-      json(content, _) {
-        return JSON.stringify(JSON.parse(content));
-      },
-      css(content, options) {
-        return Promise.resolve().then(() => csso.minify(content, options).css);
-      },
-      svg(content, options) {
-        return Promise.resolve().then(() => svgo.optimize(content, options).data);
-      },
-      html(content, options) {
-        return Promise.resolve().then(() => htmlMinifier.minify(content, options));
-      },
-    },
-    obfuscate: {
-      js(content, options, i) {
-        const mergedOptions = {
-          ...options,
-          identifiersPrefix: `_${i}`,
-        };
-        return javascriptObfuscator.obfuscate(content, mergedOptions).getObfuscatedCode();
-      },
-    },
-  };
-}
-
-async function optimus(root, options) {
+export async function optimus(root, options) {
   async function collectNodes(name) {
     return await glob(path.join(root, '**', name));
   }
@@ -436,9 +396,3 @@ async function optimus(root, options) {
   await runRemove();
   await runClean();
 }
-
-module.exports = {
-  OPTIONS_MOBILE,
-  OPTIONS_SERVER,
-  optimus,
-};

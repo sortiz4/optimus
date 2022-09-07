@@ -1,6 +1,6 @@
-const fs = require('fs-extra');
-const path = require('node:path');
-const { OPTIONS_MOBILE, optimus } = require('./core');
+import fs from 'fs-extra';
+import path from 'node:path';
+import { OPTIONS_MOBILE, optimus } from './core.mjs';
 
 function getPlatformPath() {
   switch (process.env.IONIC_CLI_HOOK_CTX_BUILD_PLATFORM) {
@@ -45,7 +45,7 @@ function shouldRunOptimus() {
   return false;
 }
 
-async function cordova(environment, options) {
+export async function cordova(environment, options) {
   function isCordovaHook() {
     return typeof environment.hook === 'string';
   }
@@ -100,7 +100,3 @@ async function cordova(environment, options) {
     return runIonicHook();
   }
 }
-
-module.exports = {
-  cordova,
-};
