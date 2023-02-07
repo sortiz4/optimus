@@ -20,7 +20,7 @@ async function main() {
         OPTIONS_MOBILE.name,
         OPTIONS_SERVER.name,
       ],
-      description: 'The name of the options to use',
+      description: 'The name of the options set to use',
     };
 
     return (
@@ -32,7 +32,7 @@ async function main() {
         .version(definition.version)
         .help()
         .alias({ h: 'help', v: 'version' })
-        .wrap(95)
+        .wrap(98)
         .argv
     );
   }

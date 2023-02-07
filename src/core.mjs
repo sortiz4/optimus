@@ -38,7 +38,7 @@ export const OPTIONS_MOBILE = {
               overrides: {
                 cleanupAttrs: false,
                 cleanupEnableBackground: false,
-                cleanupIDs: false,
+                cleanupIds: false,
                 cleanupNumericValues: false,
                 convertColors: false,
                 convertEllipseToCircle: false,
