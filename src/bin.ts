@@ -1,7 +1,6 @@
 import fs from 'fs-extra';
 import yargs, { Options as YargsOptions } from 'yargs';
-import { OPTIONS_MOBILE, OPTIONS_SERVER, optimus } from './core.js';
-import { PartialOptimusOptions } from './facade.js';
+import { OPTIONS_MOBILE, OPTIONS_SERVER, PartialOptimusOptions, optimus } from './main.js';
 import metadata from '../package.json' assert { type: 'json' };
 
 interface Options {
