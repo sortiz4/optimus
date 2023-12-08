@@ -1,38 +1,42 @@
 {
   "name": "optimus",
+  "type": "module",
   "author": "Steven Ortiz",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "license": "MIT",
   "description": "A simple asset optimizer.",
   "homepage": "https://github.com/sortiz4/optimus",
-  "main": "./src/index.mjs",
-  "bin": "./src/command.mjs",
+  "main": "./dist/src/main.js",
+  "bin": "./dist/src/bin.js",
   "dependencies": {
-    "csso": "^5.0.5",
-    "fs-extra": "^11.1.0",
-    "glob": "^8.1.0",
-    "html-minifier": "^4.0.0",
-    "javascript-obfuscator": "^4.0.0",
-    "svgo": "^3.0.2",
-    "terser": "^5.16.3",
-    "yargs": "^17.6.2"
+    "csso": "~5.0.5",
+    "fs-extra": "~11.2.0",
+    "glob": "~10.3.10",
+    "html-minifier": "~4.0.0",
+    "javascript-obfuscator": "~4.1.0",
+    "svgo": "~3.0.5",
+    "terser": "~5.26.0",
+    "yargs": "~17.7.2"
   },
   "devDependencies": {
-    "@types/csso": "^5.0.0",
-    "@types/fs-extra": "^11.0.1",
-    "@types/glob": "^8.0.1",
-    "@types/html-minifier": "^4.0.2",
-    "@types/node": "^18.13.0",
-    "@types/svgo": "^2.6.4",
-    "@types/yargs": "^17.0.22",
-    "eslint": "^8.33.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jsdoc": "^39.8.0",
-    "eslint-plugin-prefer-arrow": "^1.2.3"
-
+    "@types/csso": "~5.0.3",
+    "@types/fs-extra": "~11.0.4",
+    "@types/glob": "~8.1.0",
+    "@types/html-minifier": "~4.0.5",
+    "@types/node": "~20.10.4",
+    "@types/svgo": "~2.6.4",
+    "@types/yargs": "~17.0.32",
+    "@typescript-eslint/eslint-plugin": "~6.13.2",
+    "@typescript-eslint/parser": "~6.13.2",
+    "eslint": "~8.55.0",
+    "eslint-plugin-import": "~2.29.0",
+    "eslint-plugin-jsdoc": "~46.9.0",
+    "eslint-plugin-prefer-arrow": "~1.2.3",
+    "tsx": "~4.6.2",
+    "typescript":"~5.3.3"
   },
   "scripts": {
-    "clean": "rm -rf node_modules package-lock.json",
+    "clean": "rm -rf node_modules",
     "lint": "eslint ."
   }
 }

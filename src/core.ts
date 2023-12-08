@@ -1,8 +1,9 @@
 import fs from 'fs-extra';
+import { glob } from 'glob';
 import path from 'node:path';
-import { glob, optimize, obfuscate } from './facade.mjs';
+import { OptimusOptions, PartialOptimusOptions, obfuscate, optimize } from './facade.js';
 
-export const OPTIONS_MOBILE = {
+export const OPTIONS_MOBILE: OptimusOptions = {
   name: 'mobile',
   remove: [
     '*.map',
@@ -74,7 +75,7 @@ export const OPTIONS_MOBILE = {
   },
 };
 
-export const OPTIONS_SERVER = {
+export const OPTIONS_SERVER: OptimusOptions = {
   name: 'server',
   remove: [
     '*.coffee',
@@ -201,12 +202,12 @@ export const OPTIONS_SERVER = {
   },
 };
 
-export async function optimus(root, options) {
-  async function collectNodes(name) {
+export async function optimus(root: string, options?: PartialOptimusOptions): Promise<void> {
+  async function collectNodes(name: string): Promise<string[]> {
     return await glob(path.join(root, '**', name));
   }
 
-  async function removeEmpties(parent) {
+  async function removeEmpties(parent: string): Promise<void> {
     const stat = await fs.lstat(parent);
 
     if (stat.isDirectory()) {
@@ -222,73 +223,73 @@ export async function optimus(root, options) {
     }
   }
 
-  async function removeNode(node) {
+  async function removeNode(node: string): Promise<void> {
     await fs.remove(node);
   }
 
-  async function removeNodes(nodes) {
+  async function removeNodes(nodes: string[]): Promise<void> {
     await Promise.all(nodes.map(removeNode));
   }
 
-  async function removeNodesMatrix(matrix) {
+  async function removeNodesMatrix(matrix: string[][]): Promise<void> {
     await Promise.all(matrix.map(removeNodes));
   }
 
-  async function transformFile(transformer, options, file, i) {
+  async function transformFile(transformer: Function, options: object, file: string, i = 0): Promise<void> {
     const original = await fs.readFile(file, 'utf-8');
     const modified = await transformer(original, options, i);
     await fs.writeFile(file, modified);
   }
 
-  async function optimizeJsFile(file) {
+  async function optimizeJsFile(file: string): Promise<void> {
     await transformFile(optimize.js, mergedOptions.optimize.js.options, file);
   }
 
-  async function optimizeJsonFile(file) {
-    await transformFile(optimize.json, undefined, file);
+  async function optimizeJsonFile(file: string): Promise<void> {
+    await transformFile(optimize.json, {}, file);
   }
 
-  async function optimizeCssFile(file) {
+  async function optimizeCssFile(file: string): Promise<void> {
     await transformFile(optimize.css, mergedOptions.optimize.css.options, file);
   }
 
-  async function optimizeSvgFile(file) {
+  async function optimizeSvgFile(file: string): Promise<void> {
     await transformFile(optimize.svg, mergedOptions.optimize.svg.options, file);
   }
 
-  async function optimizeHtmlFile(file) {
+  async function optimizeHtmlFile(file: string): Promise<void> {
     await transformFile(optimize.html, mergedOptions.optimize.html.options, file);
   }
 
-  async function obfuscateJsFile(file, i) {
+  async function obfuscateJsFile(file: string, i: number): Promise<void> {
     await transformFile(obfuscate.js, mergedOptions.obfuscate.js.options, file, i);
   }
 
-  async function optimizeJsFiles(files) {
+  async function optimizeJsFiles(files: string[]): Promise<void> {
     await Promise.all(files.map(optimizeJsFile));
   }
 
-  async function optimizeJsonFiles(files) {
+  async function optimizeJsonFiles(files: string[]): Promise<void> {
     await Promise.all(files.map(optimizeJsonFile));
   }
 
-  async function optimizeCssFiles(files) {
+  async function optimizeCssFiles(files: string[]): Promise<void> {
     await Promise.all(files.map(optimizeCssFile));
   }
 
-  async function optimizeSvgFiles(files) {
+  async function optimizeSvgFiles(files: string[]): Promise<void> {
     await Promise.all(files.map(optimizeSvgFile));
   }
 
-  async function optimizeHtmlFiles(files) {
+  async function optimizeHtmlFiles(files: string[]): Promise<void> {
     await Promise.all(files.map(optimizeHtmlFile));
   }
 
-  async function obfuscateJsFiles(files) {
+  async function obfuscateJsFiles(files: string[]): Promise<void> {
     await Promise.all(files.map(obfuscateJsFile));
   }
 
-  async function runOptimizeJs() {
+  async function runOptimizeJs(): Promise<void> {
     if (mergedOptions.optimize.js.enabled) {
       await Promise.all(
         [
@@ -299,39 +300,39 @@ export async function optimus(root, options) {
     }
   }
 
-  async function runOptimizeCss() {
+  async function runOptimizeCss(): Promise<void> {
     if (mergedOptions.optimize.css.enabled) {
       await collectNodes('*.css').then(optimizeCssFiles);
     }
   }
 
-  async function runOptimizeSvg() {
+  async function runOptimizeSvg(): Promise<void> {
     if (mergedOptions.optimize.svg.enabled) {
       await collectNodes('*.svg').then(optimizeSvgFiles);
     }
   }
 
-  async function runOptimizeHtml() {
+  async function runOptimizeHtml(): Promise<void> {
     if (mergedOptions.optimize.html.enabled) {
       await collectNodes('*.{htm,html}').then(optimizeHtmlFiles);
     }
   }
 
-  async function runObfuscateJs() {
+  async function runObfuscateJs(): Promise<void> {
     if (mergedOptions.obfuscate.js.enabled) {
       await collectNodes('*.{js,cjs,mjs}').then(obfuscateJsFiles);
     }
   }
 
-  async function runClean() {
+  async function runClean(): Promise<void> {
     await removeEmpties(root);
   }
 
-  async function runRemove() {
+  async function runRemove(): Promise<void> {
     await Promise.all(mergedOptions.remove.map(collectNodes)).then(removeNodesMatrix);
   }
 
-  async function runOptimize() {
+  async function runOptimize(): Promise<void> {
     await Promise.all(
       [
         runOptimizeJs(),
@@ -342,21 +343,21 @@ export async function optimus(root, options) {
     );
   }
 
-  async function runObfuscate() {
+  async function runObfuscate(): Promise<void> {
     await runObfuscateJs();
   }
 
-  function getDefaultOptions(name) {
+  function getDefaultOptions(name?: string): OptimusOptions {
     switch (name) {
       case OPTIONS_MOBILE.name:
         return OPTIONS_MOBILE;
       case OPTIONS_SERVER.name:
+      default:
         return OPTIONS_SERVER;
     }
-    return OPTIONS_SERVER;
   }
 
-  function getMergedOptions() {
+  function getMergedOptions(): OptimusOptions {
     const defaultOptions = getDefaultOptions(options?.name);
 
     return {

@@ -7,11 +7,11 @@ both client and server distributions.
 Optimus can be installed as a global command or local package.
 
 ```sh
-npm install -g github:sortiz4/optimus#1.4.0
+npm install -g github:sortiz4/optimus#2.0.0
 ```
 
 ```json
-"optimus": "github:sortiz4/optimus#1.4.0"
+"optimus": "github:sortiz4/optimus#2.0.0"
 ```
 
 As a command, `optimus` can be called with a list of `glob` compatible paths
@@ -38,18 +38,4 @@ import { optimus } from 'optimus';
 await optimus('node_modules', { name: 'server' });
 ```
 
-As an Ionic + Cordova hook, the API is similar. Import the `cordova` function
-and call it with your own options. The hook should be added under
-`build:after`, `before_build`, and `after_build`.
-
-```js
-module.exports = async function(environment) {
-  // Cordova still uses Common JS so the hook must be imported like so
-  const { cordova } = await import('optimus');
-
-  // Pass the environment and your options to the hook
-  await cordova(environment, { name: 'mobile' });
-};
-```
-
-[1]: https://github.com/sortiz4/optimus/blob/master/src/core.js#L5
+[1]: https://github.com/sortiz4/optimus/blob/master/src/core.js#L6
