@@ -38,4 +38,4 @@ import { optimus } from 'optimus';
 await optimus('node_modules', { name: 'server' });
 ```
 
-[1]: https://github.com/sortiz4/optimus/blob/master/src/core.js#L6
+[1]: https://github.com/sortiz4/optimus/blob/master/src/core.ts#L6
