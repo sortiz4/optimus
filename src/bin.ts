@@ -1,7 +1,8 @@
 import fs from 'fs-extra';
+import process from 'node:process';
 import yargs, { Options as YargsOptions } from 'yargs';
-import { OPTIONS_MOBILE, OPTIONS_SERVER, PartialOptimusOptions, optimus } from './main.js';
-import metadata from '../package.json' assert { type: 'json' };
+import { OPTIONS_MOBILE, OPTIONS_SERVER, PartialOptimusOptions, optimus } from './main.ts';
+import metadata from '../package.json' with { type: 'json' };
 
 interface Options {
   readonly _: string[];
@@ -68,8 +69,10 @@ async function main(): Promise<void> {
   }
 }
 
-try {
-  await main();
-} catch (error) {
-  console.error(error);
+if (import.meta.main) {
+  try {
+    await main();
+  } catch (error) {
+    console.error(error);
+  }
 }

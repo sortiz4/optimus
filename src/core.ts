@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'node:path';
-import { OptimusOptions, PartialOptimusOptions, obfuscate, optimize } from './facade.js';
+import { OptimusOptions, PartialOptimusOptions, Obfuscate, Optimize } from './facade.ts';
 
 export const OPTIONS_MOBILE: OptimusOptions = {
   name: 'mobile',
@@ -203,6 +203,8 @@ export const OPTIONS_SERVER: OptimusOptions = {
 };
 
 export async function optimus(root: string, options?: PartialOptimusOptions): Promise<void> {
+  type Transformer<T> = (_0: string, _1: T, _2: number) => Promise<string> | string;
+
   async function collectNodes(name: string): Promise<string[]> {
     return await glob(path.join(root, '**', name));
   }
@@ -235,34 +237,34 @@ export async function optimus(root: string, options?: PartialOptimusOptions): Pr
     await Promise.all(matrix.map(removeNodes));
   }
 
-  async function transformFile(transformer: Function, options: object, file: string, i = 0): Promise<void> {
+  async function transformFile<T>(transformer: Transformer<T>, options: T, file: string, i = 0): Promise<void> {
     const original = await fs.readFile(file, 'utf-8');
     const modified = await transformer(original, options, i);
     await fs.writeFile(file, modified);
   }
 
   async function optimizeJsFile(file: string): Promise<void> {
-    await transformFile(optimize.js, mergedOptions.optimize.js.options, file);
+    await transformFile(Optimize.js, mergedOptions.optimize.js.options, file);
   }
 
   async function optimizeJsonFile(file: string): Promise<void> {
-    await transformFile(optimize.json, {}, file);
+    await transformFile(Optimize.json, {}, file);
   }
 
   async function optimizeCssFile(file: string): Promise<void> {
-    await transformFile(optimize.css, mergedOptions.optimize.css.options, file);
+    await transformFile(Optimize.css, mergedOptions.optimize.css.options, file);
   }
 
   async function optimizeSvgFile(file: string): Promise<void> {
-    await transformFile(optimize.svg, mergedOptions.optimize.svg.options, file);
+    await transformFile(Optimize.svg, mergedOptions.optimize.svg.options, file);
   }
 
   async function optimizeHtmlFile(file: string): Promise<void> {
-    await transformFile(optimize.html, mergedOptions.optimize.html.options, file);
+    await transformFile(Optimize.html, mergedOptions.optimize.html.options, file);
   }
 
   async function obfuscateJsFile(file: string, i: number): Promise<void> {
-    await transformFile(obfuscate.js, mergedOptions.obfuscate.js.options, file, i);
+    await transformFile(Obfuscate.js, mergedOptions.obfuscate.js.options, file, i);
   }
 
   async function optimizeJsFiles(files: string[]): Promise<void> {

@@ -1,2 +1,2 @@
-export * from './core.js';
-export * from './facade.js';
+export * from './core.ts';
+export * from './facade.ts';

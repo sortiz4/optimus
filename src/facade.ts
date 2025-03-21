@@ -36,35 +36,35 @@ export interface PartialOptimusOptions {
   readonly obfuscate?: Partial<ObfuscateOptions>;
 }
 
-export const optimize = <const>{
-  js: async (content: string, options: OptimizeJsOptions): Promise<string> => {
+export namespace Optimize {
+  export async function js(content: string, options: OptimizeJsOptions): Promise<string> {
     return (await terser(content, options)).code ?? '';
-  },
+  }
 
-  json: (content: string): string => {
+  export function json(content: string): string {
     return JSON.stringify(JSON.parse(content));
-  },
+  }
 
-  css: (content: string, options: OptimizeCssOptions): string => {
+  export function css(content: string, options: OptimizeCssOptions): string {
     return csso(content, options).css;
-  },
+  }
 
-  svg: (content: string, options: OptimizeSvgOptions): string => {
+  export function svg(content: string, options: OptimizeSvgOptions): string {
     return svgo.optimize(content, options).data;
-  },
+  }
 
-  html: (content: string, options: OptimizeHtmlOptions): string => {
+  export function html(content: string, options: OptimizeHtmlOptions): string {
     return htmlMinifier.minify(content, options);
-  },
-};
+  }
+}
 
-export const obfuscate = <const>{
-  js: (content: string, options: ObfuscateJsOptions, i: number): string => {
+export namespace Obfuscate {
+  export function js(content: string, options: ObfuscateJsOptions, i: number): string {
     const mergedOptions: ObfuscateJsOptions = {
       ...options,
       identifiersPrefix: `_${i}`,
     };
 
     return javascriptObfuscator.obfuscate(content, mergedOptions).getObfuscatedCode();
-  },
-};
+  }
+}
