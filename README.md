@@ -7,11 +7,11 @@ both client and server distributions.
 Optimus can be installed as a global command or local package.
 
 ```sh
-npm install -g github:sortiz4/optimus#2.0.0
+deno install -g github:sortiz4/optimus#3.0.0
 ```
 
 ```json
-"optimus": "github:sortiz4/optimus#2.0.0"
+"optimus": "github:sortiz4/optimus#3.0.0"
 ```
 
 As a command, `optimus` can be called with a list of `glob` compatible paths
